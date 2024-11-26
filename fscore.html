@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Score Calculator</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.question {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.result {
+    text-align: center;
+    margin-top: 20px;
+    display: none;
+}
+
+#score {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+/* About Button */
+
+/* About Button Styling */
+/* Container Styling (if not already defined) */
+.container {
+    position: relative; /* Ensure the button is positioned relative to this container */
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* About Button Styling */
+.about-btn {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 5px 10px;  /* Smaller padding */
+    position: absolute;
+    top: 10px;  /* Position at the top within the container */
+    right: 10px;  /* Position at the right within the container */
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 1000;
+    text-transform: uppercase;
+}
+
+.about-btn:hover {
+    background-color: #0b7dda;
+}
+/* About Card */
+.about-card {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.about-card-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s ease;
+}
+
+.about-card h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.about-card p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.close-btn {
+    background-color: #FF5722;
+    color: white;
+    border: none;
+    padding: 8px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.close-btn:hover {
+    background-color: #e64a19;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.cover {
+            background-color: #0095f6;
+            height: 200px;
+            position: relative;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .cover h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            margin-top: 80px; /* Position the title within the cover */
+        }
+        .cover p {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        .profile-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            background-color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .menu {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1000; /* Make sure it appears above other content */
+            transition: transform 0.3s ease;
+            transform: translateX(100%); /* Start off the screen */
+        }
+        .menu.active {
+            display: block; /* Show the menu when active */
+            transform: translateX(0); /* Slide in the menu */
+        }
+        .menu-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #999;
+            float: right;
+        }
+        .profile-details {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .profile-details h2 {
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        .profile-details p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            color: #555; /* Dark gray color for text */
+        }
+        .nav-buttons a {
+            display: block;
+            background-color: #0095f6;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 5px 0;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .nav-buttons a:hover {
+            background-color: #007bb5; /* Darker shade on hover */
+        }
+
+    </style>
+</head>
+<body>
+</div>
+<div class="profile-icon" onclick="toggleMenu()">
+    👤 </div>
+</div>
+<div id="profileMenu" class="menu">
+<span class="menu-close" onclick="toggleMenu()">✖</span>
+<div class="profile-details">
+    <h2>{{ user.username }}</h2>
+    <p>Email: {{ user.email }}</p>
+    <p>Account created on: {{ user.date_joined|date:"F d, Y" }}</p>
+</div>
+<div class="nav-buttons">
+    <a href="{% url 'profile' %}">Profile</a>
+    <a href="{% url 'expense_tracker' %}">Expense Tracker</a>
+    <a href="{% url 'emi_calculator' %}">EMI Calculator</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+    </div>
+    <div class="container">
+        <h1>Financial Score Calculator</h1>
+        <form id="financialForm">
+            <div class="question">
+                <label for="income">Monthly Income:</label>
+                <input type="number" id="income" name="income" required>
+            </div>
+            <div class="question">
+                <label for="expenses">Monthly Expenses:</label>
+                <input type="number" id="expenses" name="expenses" required>
+            </div>
+            <div class="question">
+                <label for="savings">Savings Rate (percentage of income saved):</label>
+                <input type="number" id="savings" name="savings" required>
+            </div>
+            <div class="question">
+                <label for="debts">Total Debts (in USD):</label>
+                <input type="number" id="debts" name="debts" required>
+            </div>
+            <div class="question">
+                <label for="creditScore">Credit Score:</label>
+                <input type="number" id="creditScore" name="creditScore" min="300" max="850" required>
+            </div>
+            <button type="submit">Calculate Score</button>
+        </form>
+        <div id="result" class="result">
+            <h2>Your Financial Score: <span id="score"></span></h2>
+        </div>
+    </div>
+
+    <!-- About Card -->
+    <div id="aboutCard" class="about-card">
+        <div class="about-card-content">
+            <h2>About the Financial Score Feature</h2>
+            <p>The Financial Score is a way to evaluate your financial health based on a few key metrics such as income, expenses, savings rate, debts, and credit score.</p>
+            <p><strong>Good Financial Score:</strong> A score of 80 or above indicates strong financial health. This person is saving well, has low debt, and has a good credit score.</p>
+            <p><strong>Bad Financial Score:</strong> A score below 40 indicates poor financial health. This person may have high debts, low savings, or a low credit score.</p>
+            <button id="closeBtn" class="close-btn">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<script>
+    // Handle About button click
+document.getElementById('aboutBtn').addEventListener('click', function() {
+    const aboutCard = document.getElementById('aboutCard');
+    aboutCard.style.display = 'flex';
+});
+
+// Handle Close button click in the About card
+document.getElementById('closeBtn').addEventListener('click', function() {
+    const aboutCard = document.getElementById('aboutCard');
+    aboutCard.style.display = 'none';
+});
+
+// Handle form submission to calculate financial score
+document.getElementById('financialForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Get input values
+    const income = parseFloat(document.getElementById('income').value);
+    const expenses = parseFloat(document.getElementById('expenses').value);
+    const savings = parseFloat(document.getElementById('savings').value);
+    const debts = parseFloat(document.getElementById('debts').value);
+    const creditScore = parseInt(document.getElementById('creditScore').value);
+
+    // Basic validation
+    if (isNaN(income) || isNaN(expenses) || isNaN(savings) || isNaN(debts) || isNaN(creditScore)) {
+        alert('Please fill out all fields correctly.');
+        return;
+    }
+
+    // Calculate the financial score
+    let score = 0;
+
+    // Income and Expenses ratio
+    const incomeExpenseRatio = income / expenses;
+    if (incomeExpenseRatio > 3) {
+        score += 30;
+    } else if (incomeExpenseRatio > 2) {
+        score += 20;
+    } else {
+        score += 10;
+    }
+
+    // Savings Rate
+    if (savings >= 20) {
+        score += 30;
+    } else if (savings >= 10) {
+        score += 20;
+    } else {
+        score += 10;
+    }
+
+    // Debts to Income Ratio
+    const debtIncomeRatio = debts / income;
+    if (debtIncomeRatio < 0.1) {
+        score += 20;
+    } else if (debtIncomeRatio < 0.3) {
+        score += 10;
+    } else {
+        score += 5;
+    }
+
+    // Credit Score
+    if (creditScore >= 750) {
+        score += 20;
+    } else if (creditScore >= 650) {
+        score += 10;
+    } else {
+        score += 5;
+    }
+
+    // Show the result
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+    document.getElementById('score').textContent = score;
+});
+
+</script>
+
+
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('profileMenu');
+        menu.classList.toggle('active');
+    }
+</script>

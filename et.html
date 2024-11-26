@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Expense Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    .container, .dashboard {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      margin: 10px;
+    }
+    .dashboard {
+      display: none; /* Hide dashboard initially */
+      max-width: 500px;
+      padding: 10px;
+    }
+    .dashboard .close-btn {
+      float: right;
+      font-size: 20px;
+      cursor: pointer;
+      color: red;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #28a745;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    canvas {
+      width: 100% !important;
+      height: 150px !important; /* Reduced height for better fit */
+      padding: 10px;
+    }
+    .saved-amount {
+      font-size: 18px;
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+</div>
+<div class="profile-icon" onclick="toggleMenu()">
+    👤 </div>
+</div>
+<div id="profileMenu" class="menu">
+<span class="menu-close" onclick="toggleMenu()">✖</span>
+<div class="profile-details">
+    <h2>{{ user.username }}</h2>
+    <p>Email: {{ user.email }}</p>
+    <p>Account created on: {{ user.date_joined|date:"F d, Y" }}</p>
+</div>
+<div class="nav-buttons">
+    <a href="{% url 'profile' %}">Profile</a>
+    <a href="{% url 'emi_calculator' %}">EMI Calculator</a>
+    <a href="{% url 'fscore' %}">Financial Score</a>
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+  <div class="container">
+    <h2>Expense Tracker</h2>
+    <label for="month">Month Name</label>
+    <input type="text" id="month" required>
+
+    <label for="income">Month Income</label>
+    <input type="number" id="income" required>
+
+    <label for="rent">Rent</label>
+    <input type="number" id="rent" required>
+
+    <label for="groceries">Groceries</label>
+    <input type="number" id="groceries" required>
+
+    <label for="utilities">Utilities</label>
+    <input type="number" id="utilities" required>
+
+    <label for="transportation">Transportation</label>
+    <input type="number" id="transportation" required>
+
+    <label for="entertainment">Entertainment</label>
+    <input type="number" id="entertainment" required>
+
+    <button onclick="showDashboard()">Submit</button>
+  </div>
+
+  <div class="dashboard" id="dashboard">
+    <span class="close-btn" onclick="closeDashboard()">×</span>
+    <h3>Financial Performance for <span id="monthLabel"></span></h3>
+
+    <div class="chart-grid">
+      <canvas id="expenseChart"></canvas>
+      <canvas id="incomeExpenseChart"></canvas>
+      <canvas id="cumulativeExpenseChart"></canvas>
+      <canvas id="expenseIncomeDoughnutChart"></canvas>
+    </div>
+    <div class="saved-amount" id="savedAmount"></div>
+  </div>
+
+  <script>
+    function showDashboard() {
+      const month = document.getElementById("month").value;
+      const income = parseFloat(document.getElementById("income").value);
+      const rent = parseFloat(document.getElementById("rent").value);
+      const groceries = parseFloat(document.getElementById("groceries").value);
+      const utilities = parseFloat(document.getElementById("utilities").value);
+      const transportation = parseFloat(document.getElementById("transportation").value);
+      const entertainment = parseFloat(document.getElementById("entertainment").value);
+
+      const expenses = { "Rent": rent, "Groceries": groceries, "Utilities": utilities, "Transportation": transportation, "Entertainment": entertainment };
+      const totalExpenses = rent + groceries + utilities + transportation + entertainment;
+      const savedAmount = income - totalExpenses;
+
+      document.getElementById("monthLabel").innerText = month;
+      document.getElementById("dashboard").style.display = "block";
+      document.getElementById("savedAmount").innerText = `Amount Saved: $${savedAmount.toFixed(2)}`;
+
+      // Expense Breakdown Pie Chart
+      const expenseChartCtx = document.getElementById("expenseChart").getContext("2d");
+      new Chart(expenseChartCtx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(expenses),
+          datasets: [{
+            data: Object.values(expenses),
+            backgroundColor: ["#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0", "#9966ff"]
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      // Income vs Expenses Bar Chart
+      const incomeExpenseChartCtx = document.getElementById("incomeExpenseChart").getContext("2d");
+      new Chart(incomeExpenseChartCtx, {
+        type: 'bar',
+        data: {
+          labels: ["Income", "Total Expenses"],
+          datasets: [{
+            label: "Amount",
+            data: [income, totalExpenses],
+            backgroundColor: ["#4caf50", "#f44336"]
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Cumulative Expense Line Chart
+      const cumulativeExpenseChartCtx = document.getElementById("cumulativeExpenseChart").getContext("2d");
+      new Chart(cumulativeExpenseChartCtx, {
+        type: 'line',
+        data: {
+          labels: Object.keys(expenses),
+          datasets: [{
+            label: "Cumulative Expenses",
+            data: Object.values(expenses).reduce((acc, curr, i) => {
+              acc.push((acc[i - 1] || 0) + curr);
+              return acc;
+            }, []),
+            borderColor: "#ff6384",
+            fill: false
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      // Expense-to-Income Doughnut Chart
+      const expenseIncomeDoughnutChartCtx = document.getElementById("expenseIncomeDoughnutChart").getContext("2d");
+      new Chart(expenseIncomeDoughnutChartCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ["Rent", "Groceries", "Utilities", "Transportation", "Entertainment", "Remaining Income"],
+          datasets: [{
+            data: [...Object.values(expenses), income - totalExpenses],
+            backgroundColor: ["#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0", "#9966ff", "#4caf50"]
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+
+    function closeDashboard() {
+      document.getElementById("dashboard").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>

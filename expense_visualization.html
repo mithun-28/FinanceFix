@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Financial Goal Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .planner-container {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #28a745;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .goal-breakdown {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    .goal-breakdown h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    ul {
+      text-align: left;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="planner-container">
+    <h2>Financial Goal Planner</h2>
+
+    <label for="goal">Select Your Financial Goal</label>
+    <select id="goal" required>
+      <option value="">-- Choose a Goal --</option>
+      <option>Buy a Car</option>
+      <option>Buy a House</option>
+      <option>Emergency Fund</option>
+      <option>Retirement Fund</option>
+      <option>Vacation Fund</option>
+      <option>Wedding Fund</option>
+      <!-- More options can be added here -->
+    </select>
+
+    <label for="targetAmount">Target Amount ($)</label>
+    <input type="number" id="targetAmount" min="1" required>
+
+    <label for="duration">Duration (Months)</label>
+    <input type="number" id="duration" min="1" required>
+
+    <button onclick="calculateGoal()">Calculate Goal Breakdown</button>
+
+    <div class="goal-breakdown" id="goalBreakdown" style="display: none;">
+      <h3>Goal Breakdown</h3>
+      <ul id="breakdownList"></ul>
+    </div>
+  </div>
+
+  <script>
+    function calculateGoal() {
+      const goal = document.getElementById("goal").value;
+      const targetAmount = parseFloat(document.getElementById("targetAmount").value);
+      const duration = parseInt(document.getElementById("duration").value);
+
+      if (!goal || isNaN(targetAmount) || isNaN(duration) || targetAmount <= 0 || duration <= 0) {
+        alert("Please fill out all fields correctly.");
+        return;
+      }
+
+      const monthlySavings = targetAmount / duration;
+      const breakdownList = document.getElementById("breakdownList");
+
+      // Clear previous breakdown
+      breakdownList.innerHTML = "";
+
+      // Generate tailored breakdown for each goal
+      let steps = [];
+      if (goal === "Buy a Car") {
+        steps = [
+          `Set aside $${monthlySavings.toFixed(2)} each month for ${duration} months.`,
+          "Research different car models and choose one within your budget.",
+          "Consider additional costs like insurance, maintenance, and fuel.",
+          "Negotiate with dealers for discounts or financing options.",
+          "Save for at least a 20% down payment to reduce loan burden."
+        ];
+      } else if (goal === "Buy a House") {
+        steps = [
+          `Save $${monthlySavings.toFixed(2)} monthly over ${duration} months for your down payment.`,
+          "Work on improving your credit score to get a better mortgage rate.",
+          "Research neighborhoods, property prices, and financing options.",
+          "Account for property taxes, insurance, and maintenance costs.",
+          "Aim to save at least 10-20% for the down payment."
+        ];
+      } else if (goal === "Emergency Fund") {
+        steps = [
+          `Save $${monthlySavings.toFixed(2)} per month to reach an emergency fund of ${targetAmount.toFixed(2)} in ${duration} months.`,
+          "Set up a separate, easily accessible savings account for emergencies.",
+          "Aim to cover at least 3-6 months of essential living expenses.",
+          "Reduce unnecessary expenses to increase monthly contributions.",
+          "Review and adjust fund as your living expenses change."
+        ];
+      } else if (goal === "Retirement Fund") {
+        steps = [
+          `Invest $${monthlySavings.toFixed(2)} monthly to accumulate ${targetAmount.toFixed(2)} over ${duration} months.`,
+          "Consider tax-advantaged retirement accounts (e.g., IRA, 401(k)).",
+          "Review your investment portfolio annually and adjust as needed.",
+          "Estimate future expenses and factor in inflation to adjust goals.",
+          "Contribute any windfalls (bonuses, tax refunds) to accelerate growth."
+        ];
+      } else if (goal === "Vacation Fund") {
+        steps = [
+          `Set aside $${monthlySavings.toFixed(2)} each month to save ${targetAmount.toFixed(2)} in ${duration} months.`,
+          "Research travel costs (flights, accommodation, activities) for your destination.",
+          "Book tickets and accommodation early to secure the best prices.",
+          "Plan a budget for daily expenses and stick to it during your trip.",
+          "Consider travel insurance for unexpected events."
+        ];
+      } else if (goal === "Wedding Fund") {
+        steps = [
+          `Allocate $${monthlySavings.toFixed(2)} each month to save ${targetAmount.toFixed(2)} by your wedding date in ${duration} months.`,
+          "Outline a wedding budget (venue, catering, attire, etc.).",
+          "Track expenses and adjust budget based on priorities.",
+          "Negotiate with vendors and consider off-peak dates to save.",
+          "Set up a separate account to avoid using funds for other expenses."
+        ];
+      } else {
+        steps = [
+          `Save $${monthlySavings.toFixed(2)} monthly over ${duration} months to reach your target.`,
+          "Track progress regularly and adjust contributions as needed.",
+          "Stay motivated by focusing on how this goal will benefit you."
+        ];
+      }
+
+      // Populate the breakdown steps in the list
+      steps.forEach(step => {
+        const li = document.createElement("li");
+        li.textContent = step;
+        breakdownList.appendChild(li);
+      });
+
+      document.getElementById("goalBreakdown").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>

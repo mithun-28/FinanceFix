@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMI Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff6b81, #ff4757);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #ff4757;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .container, .result-container .chart-container {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            background-color: #f4f4f4;
+            transition: border 0.3s ease;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.4s ease;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #ff6b81, #ff4757);
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .chart-container, #emiResult {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 100%;
+        }
+        .cover {
+            background-color: #0095f6;
+            height: 200px;
+            position: relative;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .cover h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            margin-top: 80px; /* Position the title within the cover */
+        }
+        .cover p {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        .profile-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            background-color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .menu {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1000; /* Make sure it appears above other content */
+            transition: transform 0.3s ease;
+            transform: translateX(100%); /* Start off the screen */
+        }
+        .menu.active {
+            display: block; /* Show the menu when active */
+            transform: translateX(0); /* Slide in the menu */
+        }
+        .menu-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #999;
+            float: right;
+        }
+        .profile-details {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .profile-details h2 {
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        .profile-details p {
+            margin: 10px 0;
+            font-size: 1.1rem;
+            color: #555; /* Dark gray color for text */
+        }
+        .nav-buttons a {
+            display: block;
+            background-color: #0095f6;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 5px 0;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .nav-buttons a:hover {
+            background-color: #007bb5; /* Darker shade on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <h1>EMI Calculator</h1>
+            <form onsubmit="calculateEMI(event)">
+                <input type="number" id="loanAmount" placeholder="Loan Amount" required>
+                <input type="number" id="interestRate" placeholder="Interest Rate (in %)" required>
+                <input type="number" id="loanTenure" placeholder="Loan Tenure (in years)" required>
+                <button type="submit">Calculate EMI</button>
+            </form>
+        </div>
+
+        <div class="result-container" style="display: none;">
+            <div id="emiResult" class="chart-container">
+                <h2>EMI: ₹<span id="emiAmount"></span></h2>
+                <p>Total Payment: ₹<span id="totalPayment"></span></p>
+                <p>Total Interest: ₹<span id="totalInterest"></span></p>
+            </div>
+
+            <div class="chart-container" id="chartContainer">
+                <h2>Total Payment Breakdown</h2>
+                <canvas id="paymentChart"></canvas>
+            </div>
+        </div>
+    </div>
+        <div class="profile-icon" onclick="toggleMenu()">
+            👤 </div>
+    </div>
+    <div id="profileMenu" class="menu">
+        <span class="menu-close" onclick="toggleMenu()">✖</span>
+        <div class="profile-details">
+            <h2>{{ user.username }}</h2>
+            <p>Email: {{ user.email }}</p>
+            <p>Account created on: {{ user.date_joined|date:"F d, Y" }}</p>
+        </div>
+        <div class="nav-buttons">
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'expense_tracker' %}">Expense Tracker</a>
+            <a href="{% url 'fscore' %}">Financial Score</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+
+    <script>
+        let paymentChart;
+
+        function calculateEMI(event) {
+            event.preventDefault();
+
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value) / 12 / 100;
+            const loanTenure = parseFloat(document.getElementById('loanTenure').value) * 12;
+
+            const emi = (loanAmount * interestRate * Math.pow(1 + interestRate, loanTenure)) / (Math.pow(1 + interestRate, loanTenure) - 1);
+            const totalPayment = emi * loanTenure;
+            const totalInterest = totalPayment - loanAmount;
+
+            document.getElementById('emiAmount').textContent = emi.toFixed(2);
+            document.getElementById('totalPayment').textContent = totalPayment.toFixed(2);
+            document.getElementById('totalInterest').textContent = totalInterest.toFixed(2);
+
+            document.querySelector('.result-container').style.display = 'flex';
+
+            if (paymentChart) {
+                paymentChart.destroy();
+            }
+
+            const ctx = document.getElementById('paymentChart').getContext('2d');
+            paymentChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [loanAmount, totalInterest],
+                        backgroundColor: ['#ff4757', '#ff6b81']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    }
+                }
+            });
+        }
+    </script>
+        <script>
+            function toggleMenu() {
+                const menu = document.getElementById('profileMenu');
+                menu.classList.toggle('active');
+            }
+        </script>
+</body>
+</html>
